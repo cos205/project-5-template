@@ -1,0 +1,73 @@
+
+
+CHIP CPU {
+
+
+
+    IN  inM[16],         // from RAM
+
+        instruction[16], // from ROM
+
+        reset;           // resets the PC (Program Counter)
+
+
+
+    OUT outM[16],        // to RAM
+
+        writeM,          // RAM load bit
+
+        addressM[15],    // RAM address
+
+        pc[15];          // address of next instruction
+
+
+
+    PARTS:
+
+    Mux16(a=instruction, b=ALUout, sel=instruction[15], out=muxout);
+
+    Not(in=instruction[15], out=not15);
+
+    And(a=instruction[5], b=instruction[15], out=andA);
+
+    Or(a=not15, b=andA, out=Aload);
+
+    ARegister(in=muxout, load=Aload, out=Aout, out[0..14]=addressM);
+
+    And(a=instruction[12], b=instruction[15], out=Asel);
+
+    Mux16(a=Aout, b=inM, sel=Asel, out=AMout);
+
+    And(a=instruction[4], b=instruction[15], out=Dload);
+
+    DRegister(in=ALUout, load=Dload, out=Dout);
+
+    ALU(x=Dout, y=AMout, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUout, zr=zr1, ng=ng1);
+
+
+
+    Not(in=ng1, out=notng);
+
+    Not(in=zr1, out=notzr);
+
+    And(a=notng, b=notzr, out=andnotout);
+
+    And(a=instruction[0], b=andnotout, out=or1);
+
+    And(a=instruction[1], b=zr1, out=or2);
+
+    And(a=instruction[2], b=ng1, out=or3);
+
+    Or(a=or1, b=or2, out=or4);
+
+    Or(a=or3, b=or4, out=jump);
+
+    And(a=jump, b=instruction[15], out=ifjump);
+
+
+
+    PC(in=Aout, load=ifjump, reset=reset, inc=true, out[0..14]=pc);
+
+    And(a=instruction[3], b=instruction[15], out=writeM);
+
+}
