@@ -60,7 +60,6 @@ def project_5(temp_dir, t):
     copy_folder(os.path.join('grader/tests', 'p5'), temp_dir, permissions='a+rwx')
 
     if t in tests :
-        print(t)
         for test in [t]:
             filename = os.path.join(temp_dir, test)
             if not os.path.exists(filename + '.hdl'):
@@ -74,7 +73,6 @@ def project_5(temp_dir, t):
                 feedback.append(test, 'diff_with_chip', output)
     
     if t in computer_tests:
-        print(t)
         if not os.path.exists(os.path.join(temp_dir, 'Computer.hdl')):
             feedback.append('Computer', 'file_missing')
         else:
