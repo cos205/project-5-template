@@ -19,7 +19,6 @@
 *.zip
 *.tar.gz
 *.rar
-*.dat
 *.DS_STORE
 *.pyc 
 
